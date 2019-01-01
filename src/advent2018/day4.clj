@@ -5,6 +5,7 @@
 
 (def input (slurp "inputs/day4"))
 
+;;; part 1
 (defn guard-ids
   [input]
   (->> input
@@ -56,7 +57,7 @@
      flatten
      frequencies
      (sort-by val >)
-     ((comp first first))))
+     first))
 
 (defn index-max-val
   [coll]
@@ -65,15 +66,31 @@
        (apply max-key second)
        first))
 
-(defn solve-day4
+(defn solve-day4-part1
   [input]
   (let [ids (guard-ids input)
         infos (map (partial guard-info input) ids)
         total-sleeps (map guard-total-sleep infos)
         max-slept-id (index-max-val total-sleeps)]
-    (* (guard-min-most-slept (nth infos max-slept-id))
+    (* (first (guard-min-most-slept (nth infos max-slept-id)))
        (read-string (nth ids max-slept-id)))))
 
-(solve-day4 input)
+(solve-day4-part1 input)
 ;; => 101262
 
+
+;;; part 2
+(defn solve-day4-part2
+  [input]
+  (let [ids (guard-ids input)
+        infos (map (partial guard-info input) ids)
+        min-most-slepts (map guard-min-most-slept infos)
+        choice-id (->> min-most-slepts
+                       (remove nil?)
+                       (map second)
+                       index-max-val)]
+    (* (read-string (nth ids choice-id))
+         (first (nth min-most-slepts choice-id)))))
+
+(solve-day4-part2 input)
+;; => 71976
